@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Silent Hill 2 - Explora los personajes, criaturas y finales del icónico juego de terror psicológico">
+    <title>Silent Hill 2 - Enfrenta tus Culpas</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Crimson+Text:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+           CSS CUSTOM PROPERTIES - Paleta Silent Hill
+           ============================================ */
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #161616;
+            --accent: #8B0000;
+            --accent-hover: #A52A2A;
+            --accent-glow: rgba(139, 0, 0, 0.4);
+            --text-primary: #e8e8e8;
+            --text-secondary: #9a9a9a;
+            --text-muted: #5a5a5a;
+            --border-color: #2a2a2a;
+            --border-hover: #3a3a3a;
+            --fog-color: rgba(120, 110, 100, 0.06);
+            
+            --font-heading: 'Cinzel', serif;
+            --font-body: 'Crimson Text', serif;
+            
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.4s ease;
+            --transition-slow: 0.6s ease;
+            
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: var(--text-primary);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-hover);
+        }
+
+        /* ============================================
+           KEYFRAME ANIMATIONS
+           ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fogFloat {
+            0%, 100% {
+                transform: translateX(0) translateY(0) scale(1);
+            }
+            33% {
+                transform: translateX(30px) translateY(-20px) scale(1.02);
+            }
+            66% {
+                transform: translateX(-20px) translateY(10px) scale(0.98);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes bloodDrip {
+            0% {
+                transform: scaleY(0);
+                transform-origin: top;
+            }
+            100% {
+                transform: scaleY(1);
+                transform-origin: top;
+            }
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem 1rem;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% 20%, var(--accent-glow) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 20% 80%, rgba(80, 20, 20, 0.15) 0%, transparent 50%),
+                linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+
+        .hero-fog {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .fog-layer {
+            position: absolute;
+            width: 250%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 30% 40%, var(--fog-color) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(130, 120, 110, 0.04) 0%, transparent 45%);
+            animation: fogFloat 30s ease-in-out infinite;
+        }
+
+        .fog-layer:nth-child(2) {
+            animation-duration: 45s;
+            animation-direction: reverse;
+            opacity: 0.7;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .hero-eyebrow {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.3s forwards;
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards;
+        }
+
+        .hero-title .accent {
+            color: var(--accent);
+            display: block;
+        }
+
+        .hero-divider {
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            margin: 0 auto 1.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.8s forwards;
+        }
+
+        .hero-description {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.7s forwards;
+        }
+
+        .hero-quote {
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-heading);
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            background: transparent;
+            transition: all var(--transition-normal);
+            opacity: 0;
+            animation: fadeInUp 1s ease 1.2s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+            background-size: 200% 100%;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .hero-cta:hover::before {
+            opacity: 1;
+            animation: shimmer 1.5s linear infinite;
+        }
+
+        .hero-cta:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.2);
+        }
+
+        .hero-cta svg {
+            width: 16px;
+            height: 16px;
+            transition: transform var(--transition-normal);
+        }
+
+        .hero-cta:hover svg {
+            transform: translateY(3px);
+        }
+
+        .scroll-cue {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-family: var(--font-heading);
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        /* ============================================
+           ENTITIES SECTION
+           ============================================ */
+        .entities-section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .entities-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-eyebrow {
+            font-family: var(--font-heading);
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-count {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .section-count .number {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           ENTITY CARDS
+           ============================================ */
+        .entity-card {
+            background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-primary) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition-normal);
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .entity-card.visible {
+            animation: cardEnter 0.6s ease forwards;
+        }
+
+        .entity-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent);
+            transform: scaleY(0);
+            transition: transform var(--transition-normal);
+        }
+
+        .entity-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .entity-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 60px rgba(139, 0, 0, 0.1);
+        }
+
+        .card-image-wrapper {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/10;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all var(--transition-slow);
+            filter: grayscale(40%) brightness(0.8);
+        }
+
+        .entity-card:hover .card-image {
+            transform: scale(1.08);
+            filter: grayscale(0%) brightness(0.9);
+        }
+
+        .card-image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                transparent 30%,
+                rgba(10, 10, 10, 0.95) 100%
+            );
+            pointer-events: none;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            font-family: var(--font-heading);
+            font-size: 0.55rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.8rem;
+            border-radius: var(--radius-sm);
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid var(--border-color);
+            z-index: 2;
+        }
+
+        .card-badge.character {
+            color: #7a9ab8;
+            border-color: rgba(122, 154, 184, 0.3);
+        }
+
+        .card-badge.creature {
+            color: var(--accent);
+            border-color: rgba(139, 0, 0, 0.3);
+        }
+
+        .card-body {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .card-title {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            transition: color var(--transition-normal);
+        }
+
+        .entity-card:hover .card-title {
+            color: var(--accent);
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            flex: 1;
+            margin-bottom: 1rem;
+        }
+
+        .card-action {
+            margin-top: auto;
+        }
+
+        .btn-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            font-family: var(--font-heading);
+            font-size: 0.6rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            background: transparent;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-normal);
+            z-index: -1;
+        }
+
+        .btn-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .btn-card:hover {
+            border-color: var(--accent);
+        }
+
+        .btn-card:focus-visible {
+            outline: 2px solid var(--text-primary);
+            outline-offset: 2px;
+        }
+
+        .btn-card svg {
+            width: 12px;
+            height: 12px;
+            transition: transform var(--transition-normal);
+        }
+
+        .btn-card:hover svg {
+            transform: scale(1.3);
+        }
+
+        /* Staggered animation delays */
+        .entity-card:nth-child(1) { animation-delay: 0.05s; }
+        .entity-card:nth-child(2) { animation-delay: 0.1s; }
+        .entity-card:nth-child(3) { animation-delay: 0.15s; }
+        .entity-card:nth-child(4) { animation-delay: 0.2s; }
+        .entity-card:nth-child(5) { animation-delay: 0.25s; }
+        .entity-card:nth-child(6) { animation-delay: 0.3s; }
+        .entity-card:nth-child(7) { animation-delay: 0.35s; }
+        .entity-card:nth-child(8) { animation-delay: 0.4s; }
+        .entity-card:nth-child(9) { animation-delay: 0.45s; }
+        .entity-card:nth-child(10) { animation-delay: 0.5s; }
+        .entity-card:nth-child(11) { animation-delay: 0.55s; }
+
+        /* ============================================
+           ENDINGS SECTION
+           ============================================ */
+        .endings-section {
+            padding: 5rem 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .endings-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(70, 100, 80, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 80% 70%, rgba(50, 80, 100, 0.08) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .endings-intro {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            font-style: italic;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        .ending-card {
+            background: linear-gradient(145deg, rgba(22, 22, 22, 0.9) 0%, var(--bg-primary) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition-normal);
+            position: relative;
+            opacity: 0;
+        }
+
+        .ending-card.visible {
+            animation: slideInLeft 0.5s ease forwards;
+        }
+
+        .ending-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            transform: scaleX(0);
+            transition: transform var(--transition-normal);
+        }
+
+        /* Ending-specific colors */
+        .ending-card[data-ending="leave"]::before { background: #5a8a6a; }
+        .ending-card[data-ending="water"]::before { background: #4a6a8a; }
+        .ending-card[data-ending="maria"]::before { background: #8a5a7a; }
+        .ending-card[data-ending="rebirth"]::before { background: #8a7a4a; }
+        .ending-card[data-ending="dog"]::before { background: #6a8a9a; }
+
+        .ending-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .ending-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-hover);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .ending-image-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 160px;
+        }
+
+        .ending-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all var(--transition-slow);
+            filter: grayscale(50%) brightness(0.7);
+        }
+
+        .ending-card:hover .ending-image {
+            transform: scale(1.05);
+            filter: grayscale(20%) brightness(0.8);
+        }
+
+        .ending-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 20%, rgba(10, 10, 10, 0.9) 100%);
+        }
+
+        .ending-badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            font-family: var(--font-heading);
+            font-size: 0.5rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: var(--radius-sm);
+            background: rgba(10, 10, 10, 0.95);
+            z-index: 2;
+        }
+
+        .ending-badge.canonical {
+            color: #5a8a6a;
+            border: 1px solid rgba(90, 138, 106, 0.4);
+        }
+
+        .ending-badge.secret {
+            color: #6a8a9a;
+            border: 1px solid rgba(106, 138, 154, 0.4);
+        }
+
+        .ending-body {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .ending-title {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            transition: filter var(--transition-normal);
+        }
+
+        .ending-card[data-ending="leave"] .ending-title { color: #5a8a6a; }
+        .ending-card[data-ending="water"] .ending-title { color: #4a6a8a; }
+        .ending-card[data-ending="maria"] .ending-title { color: #8a5a7a; }
+        .ending-card[data-ending="rebirth"] .ending-title { color: #8a7a4a; }
+        .ending-card[data-ending="dog"] .ending-title { color: #6a8a9a; }
+
+        .ending-card:hover .ending-title {
+            filter: brightness(1.3);
+        }
+
+        .ending-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 0.75rem;
+        }
+
+        .ending-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            flex: 1;
+            margin-bottom: 1rem;
+        }
+
+        .btn-ending {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            font-family: var(--font-heading);
+            font-size: 0.55rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 0.65rem 0.75rem;
+            background: transparent;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-ending::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-normal);
+            z-index: -1;
+        }
+
+        .ending-card[data-ending="leave"] .btn-ending::before { background: #5a8a6a; }
+        .ending-card[data-ending="water"] .btn-ending::before { background: #4a6a8a; }
+        .ending-card[data-ending="maria"] .btn-ending::before { background: #8a5a7a; }
+        .ending-card[data-ending="rebirth"] .btn-ending::before { background: #8a7a4a; }
+        .ending-card[data-ending="dog"] .btn-ending::before { background: #6a8a9a; }
+
+        .btn-ending:hover::before {
+            transform: scaleX(1);
+        }
+
+        .btn-ending:hover {
+            border-color: transparent;
+        }
+
+        .btn-ending:focus-visible {
+            outline: 2px solid var(--text-primary);
+            outline-offset: 2px;
+        }
+
+        .btn-ending svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        /* Ending card animation delays */
+        .ending-card:nth-child(1).visible { animation-delay: 0.1s; }
+        .ending-card:nth-child(2).visible { animation-delay: 0.2s; }
+        .ending-card:nth-child(3).visible { animation-delay: 0.3s; }
+        .ending-card:nth-child(4).visible { animation-delay: 0.4s; }
+        .ending-card:nth-child(5).visible { animation-delay: 0.5s; }
+
+        /* ============================================
+           QUOTE SECTION
+           ============================================ */
+        .quote-section {
+            padding: 5rem 0;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .quote-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 50%, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .quote-block {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quote-mark {
+            font-family: var(--font-heading);
+            font-size: 5rem;
+            color: var(--accent);
+            opacity: 0.15;
+            line-height: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .quote-text {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            font-style: italic;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .quote-author {
+            font-family: var(--font-heading);
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .site-footer {
+            padding: 3rem 0 2rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+        }
+
+        .footer-text {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .footer-disclaimer {
+            font-family: var(--font-heading);
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        /* ============================================
+           RESPONSIVE ADJUSTMENTS
+           ============================================ */
+        @media (max-width: 767.98px) {
+            .hero {
+                padding: 3rem 1rem;
+            }
+
+            .hero-eyebrow {
+                font-size: 0.6rem;
+                letter-spacing: 0.2em;
+            }
+
+            .card-image-wrapper {
+                aspect-ratio: 16/12;
+            }
+
+            .ending-image-wrapper {
+                height: 140px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .section-header {
+                margin-bottom: 2rem;
+            }
+
+            .entities-section,
+            .endings-section,
+            .quote-section {
+                padding: 3rem 0;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .ending-body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         HERO SECTION
+         ============================================ -->
+    <header class="hero">
+        <div class="hero-bg" aria-hidden="true">
+            <div class="hero-fog">
+                <div class="fog-layer"></div>
+                <div class="fog-layer"></div>
+            </div>
+        </div>
+        
+        <div class="hero-content">
+            <span class="hero-eyebrow">Silent Hill 2</span>
+            
+            <h1 class="hero-title">
+                Enfrenta tus Culpas
+                <span class="accent">en la Niebla</span>
+            </h1>
+            
+            <div class="hero-divider" aria-hidden="true"></div>
+            
+            <p class="hero-description">
+                Un viaje hacia la oscuridad interior, donde la niebla oculta más que ruinas. 
+                Cada monstruo es un espejo, cada rincón un recuerdo que se resiste a morir. 
+                El verdadero terror nace de lo que enterraste vivo.
+            </p>
+            
+            <p class="hero-quote">"En mis sueños más inquietos veo esa ciudad... Silent Hill"</p>
+            
+            <a href="#entities" class="hero-cta">
+                <span>Descender a la Niebla</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M12 5v14M19 12l-7 7-7-7"/>
+                </svg>
+            </a>
+        </div>
+        
+        <div class="scroll-cue" aria-hidden="true">
+            <span>Scroll</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+        </div>
+    </header>
+
+    <!-- ============================================
+         ENTITIES SECTION
+         ============================================ -->
+    <main id="entities" class="entities-section">
+        <div class="container position-relative">
+            <header class="section-header">
+                <span class="section-eyebrow">Exploracion</span>
+                <h2 class="section-title">Habitantes de la Niebla</h2>
+                <p class="section-count">
+                    <span class="number" id="entityCount">11</span> entidades documentadas
+                </p>
+            </header>
+            
+            <div class="row g-4" id="entitiesGrid">
+                
+                <!-- James Sunderland -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="character">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://i.pinimg.com/736x/16/fa/e9/16fae972d13cfccd829485fed6b5e2c6.jpg" 
+                                alt="James Sunderland" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge character">Personaje</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">James Sunderland</h3>
+                            <p class="card-text">
+                                Un hombre roto que recibe una carta de su esposa difunta. Su peregrinaje a Silent Hill es un descenso a los estratos de su propia psique, donde la verdad lo espera.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/watch?v=0-8_oy-vTyA" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Mary Shepherd-Sunderland -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="character">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://i.pinimg.com/736x/be/68/0e/be680ebc6f538cc02070f58e28745243.jpg" 
+                                alt="Mary Shepherd-Sunderland" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge character">Personaje</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Mary Shepherd-Sunderland</h3>
+                            <p class="card-text">
+                                La esposa de James, fallecida por enfermedad terminal. Su memoria fragmentada guía y confunde, tejida en las paredes del pueblo como susurros de lo que pudo ser.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/watch?v=pIkVo1qnG8I" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Maria -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="character">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/10/silent-hill-2-remake-maria-1.jpg" 
+                                alt="Maria" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge character">Personaje</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Maria</h3>
+                            <p class="card-text">
+                                Una mujer identica a Mary pero con personalidad opuesta. Es el deseo proyectado de James, una manifestacion de sus anhelos y culpas que muere y renace eternamente.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/watch?v=8Eo1MWLbr5k" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Angela Orosco -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="character">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://i.pinimg.com/originals/87/68/50/87685070cd4673da0862ebce53c08a6b.jpg" 
+                                alt="Angela Orosco" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge character">Personaje</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Angela Orosco</h3>
+                            <p class="card-text">
+                                Una joven atormentada por un pasado de abuso. Su Silent Hill arde en llamas eternas. Busca a su madre, pero solo encuentra las cenizas de su propia inocencia.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/watch?v=9YojpWTtPg8" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Eddie Dombrowski -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="character">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://primagames.com/wp-content/uploads/2024/10/Eddie-encounter-Silent-Hill-2-Remake.jpg" 
+                                alt="Eddie Dombrowski" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge character">Personaje</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Eddie Dombrowski</h3>
+                            <p class="card-text">
+                                Un hombre siempre ridiculizado por su peso. Silent Hill le ofrece justificacion para su rabia acumulada, transformando su victimismo en violencia desatada.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/watch?v=88EXU1JViOc" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Laura -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="character">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://i.pinimg.com/736x/ae/9a/56/ae9a56582b7e915efe8d9e936d093c07.jpg" 
+                                alt="Laura" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge character">Personaje</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Laura</h3>
+                            <p class="card-text">
+                                Una nina huerfana que conocio a Mary en el hospital. No ve monstruos porque no tiene culpas que proyectar. Es cruelmente honesta, recordando a James lo que prefiere olvidar.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/watch?v=cNrd6848rws" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Pyramid Head -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="creature">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://www.gamereactor.se/media/57/silenthill2_4735763.jpg" 
+                                alt="Pyramid Head" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge creature">Criatura</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Pyramid Head</h3>
+                            <p class="card-text">
+                                El iconico verdugo con casco metalico piramidal. Es la encarnacion de la culpa de James, su necesidad de castigo. Le persigue silencioso, ejecutando la penitencia.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/watch?v=eLd3Sh1eZCQ" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Bubble Head Nurse -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="creature">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://i.ytimg.com/vi/3Y-jhsMFn-0/hqdefault.jpg" 
+                                alt="Bubble Head Nurse" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge creature">Criatura</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Bubble Head Nurse</h3>
+                            <p class="card-text">
+                                Enfermeras con cabezas grotescamente hinchadas que acechan en Brookhaven Hospital. Representan la larga estancia de Mary y el desconocimiento medico de James.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/shorts/OVWZ8fB795k" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Lying Figure -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="creature">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://tse1.mm.bing.net/th/id/OIP._F4dIFdhoFKOZyFuE3ijEQHaF3?rs=1&pid=ImgDetMain" 
+                                alt="Lying Figure" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge creature">Criatura</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Lying Figure</h3>
+                            <p class="card-text">
+                                Criaturas atrapadas en fundas de plastico, arrastrandose y vomitando acido. Simbolizan el deseo de James de estar confinado, encapsulado como Mary en su lecho.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/watch?v=V-qa9QAwhdI" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Mannequin -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="creature">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://i.ytimg.com/vi/q0rGhFocbYc/maxresdefault.jpg" 
+                                alt="Mannequin" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge creature">Criatura</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Mannequin</h3>
+                            <p class="card-text">
+                                Maniquies con dos pares de piernas unidas, representando la sexualidad distorsionada de James. Cobran vida en la oscuridad, manifestando su deseo reprimido.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/shorts/BsP1T-I_miQ" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Abstract Daddy -->
+                <article class="col-12 col-sm-6 col-lg-4">
+                    <div class="entity-card h-100" data-type="creature">
+                        <div class="card-image-wrapper">
+                            <img 
+                                src="https://www.seekpng.com/png/detail/169-1696876_file-abstractsh2-silent-hill-2-abstract-daddy.png" 
+                                alt="Abstract Daddy" 
+                                class="card-image"
+                                loading="lazy"
+                            >
+                            <div class="card-image-overlay"></div>
+                            <span class="card-badge creature">Criatura</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Abstract Daddy</h3>
+                            <p class="card-text">
+                                Una pesadilla de carne y metal que representa el abuso sufrido por Angela. Dos figuras en una cama monstruosa, materializando el horror de un hogar convertido en prision.
+                            </p>
+                            <div class="card-action">
+                                <a href="https://www.youtube.com/watch?v=MJMqSmdgnZk" class="btn-card" target="_blank" rel="noopener">
+                                    <span>Ver Escena</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ============================================
+         ENDINGS SECTION
+         ============================================ -->
+    <section id="endings" class="endings-section" aria-labelledby="endings-title">
+        <div class="container position-relative">
+            <header class="section-header">
+                <span class="section-eyebrow">Destinos Posibles</span>
+                <h2 class="section-title" id="endings-title">Finales de la historia</h2>
+            </header>
+            
+            <p class="endings-intro">
+                El pueblo no impone un destino; refleja las decisiones del alma. 
+                Cada final es un espejo diferente de la verdad de James.
+            </p>
+            
+            <div class="row g-4">
+                
+                <!-- Leave Ending -->
+                <article class="col-12 col-md-6 col-xl-4">
+                    <div class="ending-card h-100" data-ending="leave">
+                        <div class="ending-image-wrapper">
+                            <img 
+                                src="https://i.blogs.es/f4faa9/final-renacimiento-silent-hill-2-remake/1366_2000.jpeg" 
+                                alt="Final Leave" 
+                                class="ending-image"
+                                loading="lazy"
+                            >
+                            <div class="ending-overlay"></div>
+                            <span class="ending-badge canonical">Canonico</span>
+                        </div>
+                        <div class="ending-body">
+                            <h3 class="ending-title">Leave</h3>
+                            <p class="ending-subtitle">Dejar</p>
+                            <p class="ending-text">
+                                James acepta la verdad de su crimen y encuentra la fuerza para seguir adelante. Deja Silent Hill con Laura, comenzando el lento camino de la redencion.
+                            </p>
+                            <a href="https://www.youtube.com/watch?v=eKYEumOWevo" class="btn-ending" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                </svg>
+                                <span>Ver Final</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- In Water Ending -->
+                <article class="col-12 col-md-6 col-xl-4">
+                    <div class="ending-card h-100" data-ending="water">
+                        <div class="ending-image-wrapper">
+                            <img 
+                                src="https://i.blogs.es/fd182d/final-bajo-el-agua-silent-hill-2-remake/1366_2000.jpeg" 
+                                alt="Final In Water" 
+                                class="ending-image"
+                                loading="lazy"
+                            >
+                            <div class="ending-overlay"></div>
+                        </div>
+                        <div class="ending-body">
+                            <h3 class="ending-title">In Water</h3>
+                            <p class="ending-subtitle">En el Agua</p>
+                            <p class="ending-text">
+                                Consumido por la culpa, James conduce su coche hacia las aguas del lago Toluca. Prefiere unirse a Mary en la muerte antes que enfrentar la vida sin ella.
+                            </p>
+                            <a href="https://www.youtube.com/watch?v=Fx2dBsoPM7s" class="btn-ending" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                </svg>
+                                <span>Ver Final</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Maria Ending -->
+                <article class="col-12 col-md-6 col-xl-4">
+                    <div class="ending-card h-100" data-ending="maria">
+                        <div class="ending-image-wrapper">
+                            <img 
+                                src="https://i.blogs.es/21c165/final-maria-silent-hill-2-remake/1366_2000.jpeg" 
+                                alt="Final Maria" 
+                                class="ending-image"
+                                loading="lazy"
+                            >
+                            <div class="ending-overlay"></div>
+                        </div>
+                        <div class="ending-body">
+                            <h3 class="ending-title">Maria</h3>
+                            <p class="ending-subtitle">Maria</p>
+                            <p class="ending-text">
+                                James elige la fantasia sobre la realidad. Pero mientras salen del pueblo, ella comienza a toser... El ciclo de culpa y negacion esta destinado a repetirse.
+                            </p>
+                            <a href="https://www.youtube.com/watch?v=tFtUBKCllE4" class="btn-ending" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                </svg>
+                                <span>Ver Final</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Rebirth Ending -->
+                <article class="col-12 col-md-6 col-xl-4">
+                    <div class="ending-card h-100" data-ending="rebirth">
+                        <div class="ending-image-wrapper">
+                            <img 
+                                src="https://i.blogs.es/4c3fae/final-salir-silent-hill-2-remake/1366_2000.jpeg" 
+                                alt="Final Rebirth" 
+                                class="ending-image"
+                                loading="lazy"
+                            >
+                            <div class="ending-overlay"></div>
+                        </div>
+                        <div class="ending-body">
+                            <h3 class="ending-title">Rebirth</h3>
+                            <p class="ending-subtitle">Renacimiento</p>
+                            <p class="ending-text">
+                                Obsesionado con recuperar a Mary, James realiza un ritual prohibido. Un final donde el amor trasciende la muerte, pero la linea entre devocion y locura se borra.
+                            </p>
+                            <a href="https://www.youtube.com/watch?v=i8OLTm0E0Us" class="btn-ending" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                </svg>
+                                <span>Ver Final</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Dog Ending -->
+                <article class="col-12 col-md-6 col-xl-4">
+                    <div class="ending-card h-100" data-ending="dog">
+                        <div class="ending-image-wrapper">
+                            <img 
+                                src="https://i.blogs.es/9e3b6f/final-perro-silent-hill-2-remake/1366_2000.jpeg" 
+                                alt="Final Dog" 
+                                class="ending-image"
+                                loading="lazy"
+                            >
+                            <div class="ending-overlay"></div>
+                            <span class="ending-badge secret">Secreto</span>
+                        </div>
+                        <div class="ending-body">
+                            <h3 class="ending-title">Dog</h3>
+                            <p class="ending-subtitle">Perro</p>
+                            <p class="ending-text">
+                                En una habitacion oculta, James descubre la verdad: un perro controla todo Silent Hill. Un final secreto que rompe la cuarta pared con humor macabro.
+                            </p>
+                            <a href="https://www.youtube.com/watch?v=kDgymXaKlOo" class="btn-ending" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                                </svg>
+                                <span>Ver Final</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         QUOTE SECTION
+         ============================================ -->
+    <section class="quote-section" aria-label="Cita memorable">
+        <div class="container">
+            <div class="quote-block">
+                <div class="quote-mark" aria-hidden="true">"</div>
+                <blockquote class="quote-text">
+                    Prometiste que me llevarías allí algún día... Pero nunca lo hiciste.
+                </blockquote>
+                <cite class="quote-author">Mary Shepherd-Sunderland</cite>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-logo">SILENT HILL 2</div>
+            <p class="footer-text">
+                Un estudio sobre el trauma, la culpa y la redencion. 
+                La niebla nunca se disipa completamente; solo esperamos a que el pueblo nos llame de nuevo.
+            </p>
+            <p class="footer-disclaimer">
+                Silent Hill y todos sus personajes son propiedad de Konami. 
+                Sitio de homenaje no oficial.
+            </p>
+        </div>
+    </footer>
+
+    <!-- ============================================
+         SCRIPTS
+         ============================================ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        (function() {
+            'use strict';
+            
+            // ========================================
+            // CONFIGURATION
+            // ========================================
+            const CONFIG = {
+                observerThreshold: 0.15,
+                fogOpacityInterval: 3000,
+                reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            };
+            
+            // ========================================
+            // DOM ELEMENTS
+            // ========================================
+            const elements = {
+                entityCount: document.getElementById('entityCount'),
+                entityCards: document.querySelectorAll('.entity-card'),
+                endingCards: document.querySelectorAll('.ending-card'),
+                fogLayers: document.querySelectorAll('.fog-layer'),
+                heroTitle: document.querySelector('.hero-title')
+            };
+            
+            // ========================================
+            // INTERSECTION OBSERVER
+            // ========================================
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: CONFIG.observerThreshold
+            };
+            
+            const cardObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        cardObserver.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe entity cards
+            elements.entityCards.forEach(card => {
+                cardObserver.observe(card);
+            });
+            
+            // Observe ending cards
+            elements.endingCards.forEach(card => {
+                cardObserver.observe(card);
+            });
+            
+            // ========================================
+            // FOG ANIMATION
+            // ========================================
+            if (!CONFIG.reducedMotion && elements.fogLayers.length > 0) {
+                setInterval(() => {
+                    elements.fogLayers.forEach(fog => {
+                        const randomOpacity = 0.4 + Math.random() * 0.4;
+                        fog.style.opacity = randomOpacity;
+                    });
+                }, CONFIG.fogOpacityInterval);
+            }
+            
+            // ========================================
+            // SUBTLE TITLE GLITCH
+            // ========================================
+            if (!CONFIG.reducedMotion && elements.heroTitle) {
+                setInterval(() => {
+                    if (Math.random() > 0.9) {
+                        elements.heroTitle.style.transform = `translateX(${(Math.random() - 0.5) * 3}px)`;
+                        setTimeout(() => {
+                            elements.heroTitle.style.transform = 'translateX(0)';
+                        }, 50);
+                    }
+                }, 500);
+            }
+            
+            // ========================================
+            // INITIALIZE
+            // ========================================
+            // Set initial count based on all cards visible
+            if (elements.entityCount) {
+                elements.entityCount.textContent = elements.entityCards.length;
+            }
+            
+            console.log('Silent Hill 2 - Landing loaded successfully');
+        })();
+    </script>
+</body>
+</html>
